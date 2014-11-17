@@ -1183,9 +1183,7 @@ class ThreadUtil(S3Handler, ThreadPool.Worker):
       ewah branch, forcing encrypt
       '''
       # key.copy(target_url.bucket, target_url.path)
-
-      self.__copy__(key, bucket, target_url.path, encrypt_key=True)
-
+      key.copy(target_url.bucket, target_url.path, reduced_redundancy=True, encrypt_key=True)
       '''
       /ewah branch, forcing encrypt
       '''
@@ -1193,28 +1191,6 @@ class ThreadUtil(S3Handler, ThreadPool.Worker):
       if delete_source:
         key.delete()
     message('%s => %s' % (source, target))
-
-
-  '''
-  ripped mostly from boto.s3.key,
-	boto.s3.key.copy() did not support encrypt either.
-  boto.s3.bucket.copy_key() does for coercing that aw well
-  '''
-  def __copy__(self, src_key, dst_bucket, dst_key, metadata=None,
-      reduced_redundancy=False, preserve_acl=False,
-      encrypt_key=False, validate_dst_bucket=True):
-    dst_bucket = src_key.bucket.connection.lookup(dst_bucket, validate_dst_bucket)
-    if reduced_redundancy:
-      storage_class = 'REDUCED_REDUNDANCY'
-    else:
-      storage_class = src_key.storage_class
-    return dst_bucket.copy_key(dst_key, src_key.bucket.name,
-        src_key.name, metadata,
-        storage_class=storage_class,
-        preserve_acl=preserve_acl,
-        encrypt_key=encrypt_key
-        )
-
 
 
   @log_calls
